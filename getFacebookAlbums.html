@@ -3,15 +3,43 @@
 		<title>Davel | Charger ses albums Facebook avec Jquery</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="js/jquery.getfacebookalbums.js"></script>
 		<link rel="stylesheet" href="css/facebook.css" type="text/css">
+    	<link rel="stylesheet" href="css/custom-theme/jquery-ui-1.8.18.custom.css">
 		<script type="text/javascript">
+		
 				$(document).ready(function(){
+					$('#albumsContainer').facebookPhotoDialog({
+						appId: '2408012429',
+						onImageSelected:function(data){
+							alert(data);
+						},
+						autoOpen: false,
+						draggable: false,
+						title: 'choose an album',
+						resizable: false,
+						height: 480,
+						width: 650,
+						modal: true,
+						buttons: {
+							Cancel: function() {
+								$(this).facebookPhotoDialog('close');
+							}
+						}
+					});
+					
 					$('#loadBtn').click(function(){
-						$('#albumsContainer').getFacebookAlbums({appId:'2408012429',onImageSelected:function(data){alert(data)}})
+						$('#albumsContainer')
+							.facebookPhotoDialog('open')
+							.bind('photoSelected', function(data, photo) {
+								$(this).facebookPhotoDialog('close');
+								console.log(photo);
+								$('#selectedPhoto').html('<img src="' + photo.images[0].source + '" />');
+							});
 						return false;
-					})
-				})
+					});
+				});
 		</script>
 		<style type="text/css">
 			html,body{
@@ -21,8 +49,8 @@
 		</style>
 	</head>
 	<body>
-		<h1>Charger ses albums Facebook avec Jquery</h1>
-		<p><a id="loadBtn" href="#">Chercher les photos</a></p>
+		<p><a id="loadBtn" href="#">Load Photo Albums from Facebook</a></p>
 		<div id="albumsContainer"></div>
+		<div id="selectedPhoto"></div>
 	</body>
 </html>

@@ -1,17 +1,15 @@
 #fbListAlbumsContainer,#fbImagesContainer,#fbPhotoSelection{
 	float:left;
 	position:relative;
-	height:421px;
+	width:600px;
 	margin:0 4px
 }
 
-#fbListAlbumsContainer{
-	width:600px;
-}
-
 #fbImagesContainer{
-	width:300px;
 	overflow:auto;
+	position:absolute;
+	background:white;
+	display:none;
 }
 #fbPhotoSelection{
 	width:150px;
@@ -24,8 +22,11 @@
 	cursor:pointer; 
 	float:left;
 	position:relative;
+	border:4px solid white;
 }
-
+.fbBlock.selected{
+	border:4px solid #666;
+}
 #fbListAlbumsContainer ul{
 	list-style-type:none;
 	margin:0;
