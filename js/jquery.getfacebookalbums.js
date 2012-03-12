@@ -75,14 +75,24 @@
 	onAlbumsGot = function(response){
 		var data = response.data;
 		var counter = 0;
-		var contentHTML = '<ul>';
+		var contentHTML = '';
 		albumsData = data;
 		for (var i = 0; i < data.length; i++){
 			var album = data[i];
-			contentHTML += '<li class="fbAlbum" id="album_'+counter+'">'+album.name+'</li>';
+			if(album.count > 0) {
+				contentHTML += '<div class="fbAlbum" id="album_'+counter+'"><div class="album_cover"></div><p>' + album.name + ' (' + album.count + ')</p></div>';
+				var cover_id = album.cover_photo;
+				(function(index, cover_id) {
+					FB.api('/' + cover_id, function(coverData) {
+						$('.album_cover', '#album_' + index).css({
+							background:'url(' + coverData.picture + ') center no-repeat'
+						});
+					});
+				})(counter, cover_id);
+			}
+			
 			counter++;
 		}
-		contentHTML += '</ul>';
 		$('#fbListAlbumsContainer').html(contentHTML);
 		$('.fbAlbum').click(onFBAlbumSelected);
 	};

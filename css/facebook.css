@@ -6,7 +6,7 @@
 }
 
 #fbListAlbumsContainer{
-	width:200px;
+	width:600px;
 }
 
 #fbImagesContainer{
@@ -31,7 +31,20 @@
 	margin:0;
 	padding:0;
 }
-
+#fbListAlbumsContainer .fbAlbum{
+	width:100px;
+	height:150px;
+	margin-right:5px;
+	float:left;
+}
+#fbListAlbumsContainer .album_cover{
+	float:left;
+	display:block;
+	width:100px;
+	height:100px;
+	border:1px solid #CCC;
+	margin-bottom:5px;
+}
 .fbAlbum{
 	cursor:pointer;
 	margin:3px 0;
