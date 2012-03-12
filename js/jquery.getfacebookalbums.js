@@ -89,22 +89,19 @@
 	
 	onFBAlbumSelected = function (){
 		$('#fbImagesContainer').html(options.imagesLoadingLabel+'<br><img src="'+options.loadingImage+'">');
-		var aid = albumsData[$(this).attr('id').replace('album_','')].aid;
-		FB.api({
-				method: 'photos.get',
-				aid: aid
-			},
+		var aid = albumsData[$(this).attr('id').replace('album_','')].id;
+		FB.api(aid + '/photos',
 			onPhotosGot
 		);
 	};
 	
-	onPhotosGot = function(data){
+	onPhotosGot = function(response){
+		var data = response.data;
 		var counter = 0;
 		var contentHTML = '';
 		photosData = data;
 		for (var i = 0; i < data.length; i++){
-			var photo = data[i];
-			contentHTML += '<div class="fbBlock" id="image_'+counter+'"><img src="'+photo.src+'"/></div>';
+			contentHTML += '<div class="fbBlock" id="image_'+counter+'"><img src="' + data[i].picture + '"/></div>';
 			counter++;
 		}
 		$('#fbImagesContainer').html(contentHTML);
