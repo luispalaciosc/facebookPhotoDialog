@@ -19,12 +19,13 @@
 	var albumsData;
 	var photosData;
 	var selectedPhoto;
+	var accessToken;
 	
 	var options = {
 		albumsLoadingLabel:'Albums Loading',
 		imagesLoadingLabel:'Images Loading',
 		needAuthorizeLabel:"You must authorize the application",
-		loadingImage:'img/loading.gif',
+		loadingImage:'images/loading.gif',
 		urlFacebookScript:'http://connect.facebook.net/en_US/all.js',
 		onImageSelected:null,
 		appId:null
@@ -57,7 +58,7 @@
 		  
 		FB.login(function(response) {
 			if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
-				console.log('hey');
+				accessToken = response.authResponse.accessToken;
 				getAlbums();
 			}else{
 				$('#fbListAlbumsContainer').html(options.needAuthorizeLabel);
@@ -66,15 +67,13 @@
 	};
 	
 	getAlbums = function(){
-		FB.api({
-				method: 'photos.getAlbums'
-			},
+		FB.api('/me/albums',
 			onAlbumsGot
 		);
 	};
 
-	onAlbumsGot = function(data){
-		console.log(data);
+	onAlbumsGot = function(response){
+		var data = response.data;
 		var counter = 0;
 		var contentHTML = '<ul>';
 		albumsData = data;
@@ -84,7 +83,6 @@
 			counter++;
 		}
 		contentHTML += '</ul>';
-		console.log(contentHTML);
 		$('#fbListAlbumsContainer').html(contentHTML);
 		$('.fbAlbum').click(onFBAlbumSelected);
 	};
