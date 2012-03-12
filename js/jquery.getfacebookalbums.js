@@ -55,8 +55,6 @@
 			status: true
 		});
 		  
-		//FB.getLoginStatus(function(response){console.log(response);});
-		
 		FB.login(function(response) {
 			if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
 				console.log('hey');
@@ -68,12 +66,11 @@
 	};
 	
 	getAlbums = function(){
-		FB.api(
-          {
-            method: 'photos.getAlbums'
-          },
-          onAlbumsGot
-        );		
+		FB.api({
+				method: 'photos.getAlbums'
+			},
+			onAlbumsGot
+		);
 	};
 
 	onAlbumsGot = function(data){
@@ -95,13 +92,12 @@
 	onFBAlbumSelected = function (){
 		$('#fbImagesContainer').html(options.imagesLoadingLabel+'<br><img src="'+options.loadingImage+'">');
 		var aid = albumsData[$(this).attr('id').replace('album_','')].aid;
-		FB.api(
-          {
-            method: 'photos.get',
-			aid: aid
-          },
-          onPhotosGot
-        );		
+		FB.api({
+				method: 'photos.get',
+				aid: aid
+			},
+			onPhotosGot
+		);
 	};
 	
 	onPhotosGot = function(data){
