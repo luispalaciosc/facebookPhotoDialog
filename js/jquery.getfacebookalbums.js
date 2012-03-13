@@ -18,7 +18,6 @@
 	$.widget('ui.facebookPhotoDialog', $.ui.dialog, {
 		albumsData: undefined,
 		photosData: undefined,
-		selectedPhoto: undefined,
 		defaultButtons: undefined,
 		_this: undefined,
 		options: {
@@ -154,8 +153,8 @@
 			$('.fbBlock').click(_this._onFBPhotoSelected);
 		},
 		_onFBPhotoSelected: function (e){
-			_this.selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
-			_this._trigger('photoselected', e, _this.photosData[_this.selectedPhoto]);
+			var selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
+			_this._trigger('photoselected', e, _this.photosData[selectedPhoto]);
 		}
 	});
 })(jQuery);
