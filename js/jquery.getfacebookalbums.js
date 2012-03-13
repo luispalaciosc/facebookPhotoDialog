@@ -36,7 +36,7 @@
 			_this.uiDialog = _this.uiDialogOriginal;
 			$.ui.dialog.prototype._create.apply(this, arguments);
 			if(this.options.appId === null){
-				$(this).html("The AppId is not set, try this code : $('#reference').getFacebookAlbums({appId:'YOUR-APP-ID'})");
+				$(this).html("The AppId is not set, try this code : $('#reference').facebookPhotoDialog({appId:'YOUR-APP-ID'})");
 				return;
 			}
 		},
