@@ -15,14 +15,12 @@
 
 
 (function($) {
-	var albumsData;
-	var photosData;
-	var selectedPhoto;
-	var accessToken;
-	var defaultButtons;
-	var _this;
-	
 	$.widget('ui.facebookPhotoDialog', $.ui.dialog, {
+		albumsData: undefined,
+		photosData: undefined,
+		selectedPhoto: undefined,
+		defaultButtons: undefined,
+		_this: undefined,
 		options: {
 			albumsLoadingLabel:'Albums Loading',
 			imagesLoadingLabel:'Images Loading',
@@ -43,7 +41,7 @@
 			}
 		},
 		_init: function(){
-			defaultButtons = this.options.buttons;
+			_this.defaultButtons = this.options.buttons;
 			return $.ui.dialog.prototype._init.apply(this, arguments);
 		},
 		open: function() {
@@ -78,7 +76,6 @@
 
 			FB.login(function(response) {
 				if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
-					accessToken = response.authResponse.accessToken;
 					_this._getAlbums();
 				}else{
 					$('#fbListAlbumsContainer').html(_options.needAuthorizeLabel);
@@ -95,7 +92,7 @@
 			var data = response.data;
 			var counter = 0;
 			var contentHTML = '';
-			albumsData = data;
+			_this.albumsData = data;
 			for (var i = 0; i < data.length; i++){
 				var album = data[i];
 				if(album.count > 0) {
@@ -124,7 +121,7 @@
 		},
 		_onFBAlbumSelected: function (){
 			_this._showLoader();
-			var aid = albumsData[$(this).attr('id').replace('album_','')].id;
+			var aid = _this.albumsData[$(this).attr('id').replace('album_','')].id;
 			FB.api(aid + '/photos',
 				_this._onPhotosGot
 			);
@@ -142,15 +139,15 @@
 			_this.element.facebookPhotoDialog( "option", "buttons", newButtons);
 		},
 		_restoreDefaultButtons: function() {
-			console.log(defaultButtons);
-			_this.element.facebookPhotoDialog( "option", "buttons", defaultButtons);
+			console.log(_this.defaultButtons);
+			_this.element.facebookPhotoDialog( "option", "buttons", _this.defaultButtons);
 		},
 		_onPhotosGot: function(response){
 			_this._hideLoader();
 			var data = response.data;
 			var counter = 0;
 			var contentHTML = '';
-			photosData = data;
+			_this.photosData = data;
 			for (var i = 0; i < data.length; i++){
 				contentHTML += '<div class="fbBlock" id="image_'+counter+'"><img src="' + data[i].picture + '"/></div>';
 				counter++;
@@ -159,8 +156,8 @@
 			$('.fbBlock').click(_this._onFBPhotoSelected);
 		},
 		_onFBPhotoSelected: function (){
-			selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
-			_this.element.trigger('photoSelected', photosData[selectedPhoto]);
+			_this.selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
+			_this.element.trigger('photoSelected', _this.photosData[_this.selectedPhoto]);
 		}
 	});
 })(jQuery);
