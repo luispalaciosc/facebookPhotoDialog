@@ -33,7 +33,6 @@
 		_super_create: $.ui.dialog.prototype._create,
 		_create: function() {
 			_this = this;
-			_this.uiDialog = _this.uiDialogOriginal;
 			$.ui.dialog.prototype._create.apply(this, arguments);
 			if(this.options.appId === null){
 				$(this).html("The AppId is not set, try this code : $('#reference').facebookPhotoDialog({appId:'YOUR-APP-ID'})");
