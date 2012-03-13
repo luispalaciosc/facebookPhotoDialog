@@ -27,7 +27,6 @@
 			needAuthorizeLabel:"You must authorize the application",
 			loadingImage:'images/loading.gif',
 			urlFacebookScript:'http://connect.facebook.net/en_US/all.js',
-			onImageSelected:null,
 			appId:null
 		},
 		_super_create: $.ui.dialog.prototype._create,
