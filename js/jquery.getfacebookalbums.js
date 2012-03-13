@@ -153,9 +153,9 @@
 			$('#fbImagesContainer').html(contentHTML).show();
 			$('.fbBlock').click(_this._onFBPhotoSelected);
 		},
-		_onFBPhotoSelected: function (){
+		_onFBPhotoSelected: function (e){
 			_this.selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
-			_this.element.trigger('photoSelected', _this.photosData[_this.selectedPhoto]);
+			_this._trigger('photoselected', e, _this.photosData[_this.selectedPhoto]);
 		}
 	});
 })(jQuery);

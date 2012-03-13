@@ -23,17 +23,16 @@
 							Cancel: function() {
 								$(this).facebookPhotoDialog('close');
 							}
+						},
+						photoselected: function(event, data) {
+							$(this).facebookPhotoDialog('close');
+							console.log(data);
+							$('#selectedPhoto').html('<img src="' + data.images[0].source + '" />');
 						}
 					});
 					
 					$('#loadBtn').click(function(){
-						$('#albumsContainer')
-							.facebookPhotoDialog('open')
-							.bind('photoSelected', function(data, photo) {
-								$(this).facebookPhotoDialog('close');
-								console.log(photo);
-								$('#selectedPhoto').html('<img src="' + photo.images[0].source + '" />');
-							});
+						$('#albumsContainer').facebookPhotoDialog('open');
 						return false;
 					});
 				});
