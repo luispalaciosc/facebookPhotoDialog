@@ -19,7 +19,6 @@
 		albumsData: undefined,
 		photosData: undefined,
 		defaultButtons: undefined,
-		_this: undefined,
 		options: {
 			albumsLoadingLabel:'Albums Loading',
 			imagesLoadingLabel:'Images Loading',
@@ -28,68 +27,79 @@
 			urlFacebookScript:'http://connect.facebook.net/en_US/all.js',
 			appId:null
 		},
-		_super_create: $.ui.dialog.prototype._create,
 		_create: function() {
-			_this = this;
-			$.ui.dialog.prototype._create.apply(this, arguments);
+			console.log('create');
 			if(this.options.appId === null){
 				$(this).html("The AppId is not set, try this code : $('#reference').facebookPhotoDialog({appId:'YOUR-APP-ID'})");
 				return;
 			}
+			return $.ui.dialog.prototype._create.apply(this, arguments);
 		},
 		_init: function(){
-			_this.defaultButtons = this.options.buttons;
+			console.log('init');
+			this.defaultButtons = this.options.buttons;
 			return $.ui.dialog.prototype._init.apply(this, arguments);
 		},
 		open: function() {
 			this._restoreDefaultButtons();
-			$.ui.dialog.prototype.open.apply(this, arguments);
+			var self = this;
 			$.getScript(this.options.urlFacebookScript, function() {
 				$('body').prepend('<div id="fb-root"></div>');
-				_this.element.html('<div id="fbListAlbumsContainer"></div><div id="fbImagesContainer"></div>');
-				_this._login();
+				self.element.html('<div id="fbListAlbumsContainer"></div><div id="fbImagesContainer"></div>');
+				//console.log(_this);
+				self._login();
 			});
+			return $.ui.dialog.prototype.open.apply(this, arguments);
 		},
 		_showLoader: function() {
 			$('#fbListAlbumsContainer').hide();
-			_this.element.css({
-				background:'url(' + _this.options.loadingImage + ') center no-repeat'
+			this.element.css({
+				background:'url(' + this.options.loadingImage + ') center no-repeat'
 			});
 		},
 		_hideLoader: function() {
 			$('#fbListAlbumsContainer').show();
-			_this.element.css({
+			this.element.css({
 				background:'none'
 			});
 		},
 		_login: function(){
 			var _options = this.options;
-			_this._showLoader();
+			this._showLoader();
 			FB.init({
 				appId: _options.appId,
 				cookie : true,
 				status: true
 			});
 
+			var self = this;
 			FB.login(function(response) {
 				if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
-					_this._getAlbums();
+					self._getAlbums();
 				}else{
 					$('#fbListAlbumsContainer').html(_options.needAuthorizeLabel);
 				}
 			},{scope: 'user_photos'});
 		},
 		_getAlbums: function(){
-			FB.api('/me/albums',
-				_this._onAlbumsGot
-			);
+			var self=this;
+			$(document).bind('whatever', function (e){
+				self.someCallback(this, e);
+			});
+			var someCallback=function(source,event){
+				//do stuff
+			};
+			var self = this;
+			FB.api('/me/albums', function (response){
+				self._onAlbumsGot(response);
+			});
 		},
 		_onAlbumsGot: function(response){
-			_this._hideLoader();
+			this._hideLoader();
 			var data = response.data;
 			var counter = 0;
 			var contentHTML = '';
-			_this.albumsData = data;
+			this.albumsData = data;
 			for (var i = 0; i < data.length; i++){
 				var album = data[i];
 				if(album.count > 0) {
@@ -110,51 +120,58 @@
 				.html(contentHTML)
 				.find('.album_cover')
 				.css({
-					background:'url(' + _this.options.loadingImage + ') center no-repeat'
+					background:'url(' + this.options.loadingImage + ') center no-repeat'
 				});
-
-			$('.fbAlbum').click(_this._onFBAlbumSelected);
+			var self = this;
+			$('.fbAlbum').click(function() {
+				self._onFBAlbumSelected($(this).attr('id').replace('album_',''));
+			});
 			
 		},
-		_onFBAlbumSelected: function (){
-			_this._showLoader();
-			var aid = _this.albumsData[$(this).attr('id').replace('album_','')].id;
+		_onFBAlbumSelected: function (index){
+			this._showLoader();
+			var aid = this.albumsData[index].id;
+			var self = this;
 			FB.api(aid + '/photos',
-				_this._onPhotosGot
+				function(data) {
+					self._onPhotosGot(data)
+				}
 			);
-			_this._addBackButton();
+			this._addBackButton();
 		},
 		_addBackButton: function() {
-			var buttons = _this.options.buttons;
+			var buttons = this.options.buttons;
+			var self = this;
 			var newButtons = {
 				Back: function() { 
 					$('#fbImagesContainer').hide();
-					_this._restoreDefaultButtons();
+					self._restoreDefaultButtons();
 				}
 			};
 			$.extend(newButtons, buttons);
-			_this.element.facebookPhotoDialog( "option", "buttons", newButtons);
+			this.element.facebookPhotoDialog( "option", "buttons", newButtons);
 		},
 		_restoreDefaultButtons: function() {
-			console.log(_this.defaultButtons);
-			_this.element.facebookPhotoDialog( "option", "buttons", _this.defaultButtons);
+			this.element.facebookPhotoDialog( "option", "buttons", this.defaultButtons);
 		},
 		_onPhotosGot: function(response){
-			_this._hideLoader();
+			this._hideLoader();
 			var data = response.data;
 			var counter = 0;
 			var contentHTML = '';
-			_this.photosData = data;
+			this.photosData = data;
 			for (var i = 0; i < data.length; i++){
 				contentHTML += '<div class="fbBlock" id="image_'+counter+'"><img src="' + data[i].picture + '"/></div>';
 				counter++;
 			}
 			$('#fbImagesContainer').html(contentHTML).show();
-			$('.fbBlock').click(_this._onFBPhotoSelected);
+			var self = this;
+			$('.fbBlock').click(function(e) {
+				self._onFBPhotoSelected(e, $(this).addClass('selected').attr('id').replace('image_',''));
+			});
 		},
-		_onFBPhotoSelected: function (e){
-			var selectedPhoto = $(this).addClass('selected').attr('id').replace('image_','');
-			_this._trigger('photoselected', e, _this.photosData[selectedPhoto]);
+		_onFBPhotoSelected: function (e, index){
+			this._trigger('photoselected', e, this.photosData[index]);
 		}
 	});
 })(jQuery);
